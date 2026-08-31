@@ -1,5 +1,14 @@
-# Nodes only. All MiniMax-H3 weights live on the RunPod network volume
-# mounted at /runpod-volume (see download_models.py / extra_model_paths.yaml).
+# Nodes only. MiniMax-H3 weights are already on network volume 0vocp18ung.
+# Pod mount /workspace/models == serverless /runpod-volume/models:
+#
+#   models/diffusion_models/MiniMax-H3-FL2VA-int8-convrot.safetensors
+#   models/text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors
+#   models/vae/minimax_h3_video_vae_fp16.safetensors
+#   models/vae/minimax_h3_audio_vae_fp32.safetensors
+#   models/loras/minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors
+#   models/loras/电影镜头_000019000.safetensors
+#
+# Do not COPY or wget those files. Attach volume 0vocp18ung in US-IL-1.
 FROM runpod/worker-comfyui:5.8.4-base
 
 RUN git clone https://github.com/yolain/ComfyUI-Easy-Use /comfyui/custom_nodes/ComfyUI-Easy-Use && cd /comfyui/custom_nodes/ComfyUI-Easy-Use && (git checkout 5618a748c14858a6e95a583baa28bb7c8da7976a 2>/dev/null || (git fetch origin 5618a748c14858a6e95a583baa28bb7c8da7976a --depth=1 && git checkout 5618a748c14858a6e95a583baa28bb7c8da7976a) || echo "WARN: commit 5618a748c14858a6e95a583baa28bb7c8da7976a unreachable in https://github.com/yolain/ComfyUI-Easy-Use, falling back to default branch HEAD")
@@ -16,7 +25,6 @@ RUN mkdir -p /opt && cp /handler.py /opt/worker-comfyui-handler.py
 COPY handler.py /handler.py
 COPY rp_handler.py /rp_handler.py
 COPY test_input.json /test_input.json
-COPY download_models.py /opt/download_models.py
 COPY start_wrapper.sh /start_wrapper.sh
 COPY extra_model_paths.yaml /comfyui/extra_model_paths.yaml
 RUN chmod +x /start_wrapper.sh

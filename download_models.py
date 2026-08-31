@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
-"""Put every MiniMax-H3 workflow weight on the RunPod network volume.
+"""Optional re-seed helper. The Docker image does not run this.
 
-The Docker image contains custom nodes only. Weights are required at:
-
-    /runpod-volume/models/<folder>/<filename>
-
-Missing files are downloaded onto the volume on first boot. Pre-seed the
-volume over S3 to skip that. The worker refuses to start without /runpod-volume.
+Weights are already on volume 0vocp18ung at /runpod-volume/models (Pod: /workspace/models).
+The worker only verifies those files at boot.
 """
 
 from __future__ import annotations
