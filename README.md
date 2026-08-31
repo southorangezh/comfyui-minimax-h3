@@ -7,8 +7,10 @@ RunPod network volume mounted at `/runpod-volume`.
 
 The worker base image ships ComfyUI 0.29.x. This repo upgrades it to **ComfyUI
 v0.34.0** at build time so native MiniMax-H3 modules exist (`comfy.ldm.minimax`,
-`MiniMaxH3ImageToVideo`, `comfy.model_prefetch`). Rebuild the image after pulling
-these changes; an old worker will keep failing on `missing_node_type`.
+`MiniMaxH3ImageToVideo`, `comfy.model_prefetch`), then reinstalls **PyTorch
+2.10.0+cu126** so it matches US-IL-1 ADA GPUs (driver CUDA 12.6). Rebuild the
+image after pulling these changes; an old worker will keep failing on
+`missing_node_type` or `NVIDIA driver ... too old`.
 
 ## Network volume layout
 

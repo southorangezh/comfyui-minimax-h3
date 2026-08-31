@@ -37,6 +37,12 @@ RUN for r in /comfyui/custom_nodes/*/requirements.txt; do \
       [ -f "$r" ] && uv pip install --no-cache -r "$r" || true; \
     done
 
+# ComfyUI 0.34 deps pull CUDA 13 torch wheels (need driver 580+). ADA_48_PRO
+# hosts in US-IL-1 report CUDA 12.6 (12060), so pin cu126 last.
+RUN uv pip install --force-reinstall --no-cache \
+    torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0 \
+    --index-url https://download.pytorch.org/whl/cu126
+
 RUN mkdir -p /opt && cp /handler.py /opt/worker-comfyui-handler.py
 COPY handler.py /handler.py
 COPY rp_handler.py /rp_handler.py
