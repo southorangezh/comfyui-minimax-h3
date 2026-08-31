@@ -21,6 +21,11 @@ HF_CACHE = f"{VOLUME_ROOT}/hf-cache"
 # dest name is what api-workflow.json loads.
 MODELS = [
     {
+        "repo_id": "Comfy-Org/MiniMax-H3",
+        "filename": "diffusion_models/minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+        "relpath": "diffusion_models/minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+    },
+    {
         "repo_id": "Gluttony10/MiniMax-H3-INT8-CONVROT",
         "filename": "MiniMax-H3-FL2VA-int8_convrot.safetensors",
         "relpath": "diffusion_models/MiniMax-H3-FL2VA-int8-convrot.safetensors",
