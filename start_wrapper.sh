@@ -19,6 +19,22 @@ required=(
 )
 
 echo "worker-comfyui: network volume detected at ${VOLUME_ROOT}"
+
+# First image that bakes the pruned UNET copies it onto the volume so later
+# Dockerfiles can drop the download RUN.
+PRUNED_NAME="minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+IMAGE_PRUNED="/comfyui/models/diffusion_models/${PRUNED_NAME}"
+VOLUME_PRUNED="${MODELS}/diffusion_models/${PRUNED_NAME}"
+if [ -f "${IMAGE_PRUNED}" ]; then
+  echo "worker-comfyui: ok $(stat -c '%s %n' "${IMAGE_PRUNED}")"
+  if [ ! -f "${VOLUME_PRUNED}" ]; then
+    echo "worker-comfyui: seeding volume from image -> ${VOLUME_PRUNED}"
+    mkdir -p "$(dirname "${VOLUME_PRUNED}")"
+    cp -f "${IMAGE_PRUNED}" "${VOLUME_PRUNED}"
+    echo "worker-comfyui: seeded $(stat -c '%s %n' "${VOLUME_PRUNED}")"
+  fi
+fi
+
 missing=0
 for path in "${required[@]}"; do
   if [ -f "$path" ]; then
