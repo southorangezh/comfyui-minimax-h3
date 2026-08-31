@@ -31,7 +31,7 @@ RUN BACKOFFS="10 20 30 60 90" && for i in 1 2 3 4 5; do HF_TOKEN=$HF_TOKEN comfy
 
 # Keep the worker-comfyui handler, then overlay repo handler.py so RunPod
 # GitHub detection sees runpod.serverless.start() in the image too.
-RUN cp /handler.py /opt/worker-comfyui-handler.py
+RUN mkdir -p /opt && cp /handler.py /opt/worker-comfyui-handler.py
 COPY handler.py /handler.py
 COPY rp_handler.py /rp_handler.py
 COPY test_input.json /test_input.json
