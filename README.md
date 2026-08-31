@@ -5,6 +5,11 @@ Submission: https://comfy.getrunpod.io/dashboard/submissions/kd78hh028sa8f178gh0
 The Docker image contains **custom nodes only**. Every model is loaded from the
 RunPod network volume mounted at `/runpod-volume`.
 
+The worker base image ships ComfyUI 0.29.x. This repo upgrades it to **ComfyUI
+v0.34.0** at build time so native MiniMax-H3 modules exist (`comfy.ldm.minimax`,
+`MiniMaxH3ImageToVideo`, `comfy.model_prefetch`). Rebuild the image after pulling
+these changes; an old worker will keep failing on `missing_node_type`.
+
 ## Network volume layout
 
 Attach volume `0vocp18ung` (`crowded_rose_wolverine`) in US-IL-1. Paths inside
