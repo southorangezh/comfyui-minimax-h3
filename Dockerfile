@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
-# Nodes only. MiniMax-H3 weights are already on network volume 0vocp18ung.
+# Nodes only. MiniMax-H3 weights live on network volume 0vocp18ung.
 # Pod mount /workspace/models == serverless /runpod-volume/models:
 #
+#   models/diffusion_models/minimax_h3_fl2va_pruned_int8_convrot.safetensors
 #   models/diffusion_models/MiniMax-H3-FL2VA-int8-convrot.safetensors
 #   models/text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors
 #   models/vae/minimax_h3_video_vae_fp16.safetensors
@@ -9,7 +10,7 @@
 #   models/loras/minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors
 #   models/loras/电影镜头_000019000.safetensors
 #
-# Do not COPY the volume weights except the one-shot pruned UNET bake below.
+# Do not COPY or wget those files. Attach volume 0vocp18ung in US-IL-1.
 #
 # worker-comfyui 5.8.x ships ComfyUI <= 0.29, which predates native MiniMax-H3
 # (comfy.ldm.minimax, MiniMaxH3ImageToVideo, comfy.model_prefetch).
@@ -43,18 +44,6 @@ RUN for r in /comfyui/custom_nodes/*/requirements.txt; do \
 RUN uv pip install --force-reinstall --no-cache \
     torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0 \
     --index-url https://download.pytorch.org/whl/cu126
-
-# ONE-SHOT: bake pruned FL2VA (~19.5GB) using a BuildKit cache disk for the
-# Hugging Face hub cache so retries resume and the cache is not stored in the
-# image. First worker copies it onto volume 0vocp18ung. DELETE this block
-# (and bake_pruned_unet.py) on the next rebuild after that file exists on
-# the volume.
-ARG HF_TOKEN=
-COPY bake_pruned_unet.py /tmp/bake_pruned_unet.py
-RUN --mount=type=cache,id=hf-hub,target=/root/.cache/huggingface \
-    uv pip install --no-cache hf_transfer \
-    && HF_HUB_ENABLE_HF_TRANSFER=1 HF_TOKEN="${HF_TOKEN}" python /tmp/bake_pruned_unet.py \
-    && rm -f /tmp/bake_pruned_unet.py
 
 RUN mkdir -p /opt && cp /handler.py /opt/worker-comfyui-handler.py
 COPY handler.py /handler.py
