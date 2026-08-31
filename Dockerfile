@@ -35,6 +35,7 @@ COPY rp_handler.py /rp_handler.py
 COPY test_input.json /test_input.json
 COPY download_models.py /opt/download_models.py
 COPY start_wrapper.sh /start_wrapper.sh
+COPY extra_model_paths.yaml /comfyui/extra_model_paths.yaml
 RUN chmod +x /start_wrapper.sh
 
 # Wrapper downloads the 32GB UNET + 32B text encoder if missing, then /start.sh.
