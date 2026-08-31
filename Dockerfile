@@ -11,9 +11,9 @@ RUN git clone https://github.com/pythongosssss/ComfyUI-Custom-Scripts /comfyui/c
 RUN comfy node install --exit-on-fail rgthree-comfy --mode remote
 RUN comfy node install --exit-on-fail comfyui-kjnodes
 RUN comfy node install --exit-on-fail vsaan212-workflow-utilities
-# RUN # Could not resolve custom node: MiniMaxH3BlockCacheT8
-# RUN # Could not resolve custom node: H3LatentUpscaleByJingchen573
-# RUN # Could not resolve custom node: MinimaxH3LatentUpscaler3D
+RUN git clone https://github.com/T8mars/comfyui-minimax-h3-blockcache-T8 /comfyui/custom_nodes/comfyui-minimax-h3-blockcache-T8
+RUN git clone https://github.com/wjc573/ComfyUI-H3LatentUpscale-jingchen573 /comfyui/custom_nodes/ComfyUI-H3LatentUpscale-jingchen573
+RUN git clone https://github.com/LBH-123-AI/Comfyui_Minimax_h3_latent_Upscaler /comfyui/custom_nodes/Comfyui_Minimax_h3_latent_Upscaler
 
 # download models into comfyui
 RUN BACKOFFS="10 20 30 60 90" && for i in 1 2 3 4 5; do HF_TOKEN=$HF_TOKEN comfy model download --url 'https://huggingface.co/lightx2v/Minimax-h3-Turbo/resolve/main/minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors' --relative-path models/loras --filename 'minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors' && break; if [ $i -eq 5 ]; then echo "model-download failed after 5 attempts" >&2; exit 1; fi; SLEEP=$(echo $BACKOFFS | cut -d ' ' -f $i) && echo "model-download attempt $i failed; retrying in $SLEEP seconds" >&2; sleep $SLEEP; done
@@ -28,3 +28,9 @@ RUN BACKOFFS="10 20 30 60 90" && for i in 1 2 3 4 5; do HF_TOKEN=$HF_TOKEN comfy
 
 # copy all input data (like images or videos) into comfyui (uncomment and adjust if needed)
 # COPY input/ /comfyui/input/
+
+# Serverless handler is provided by the base image:
+#   /start.sh starts ComfyUI, then runs `python -u /handler.py`
+#   which calls runpod.serverless.start({"handler": handler}).
+# Do not COPY the repo-root handler.py over /handler.py.
+CMD ["/start.sh"]
